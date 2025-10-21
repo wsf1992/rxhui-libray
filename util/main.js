@@ -1,0 +1,95 @@
+var y = Object.defineProperty;
+var h = Object.getOwnPropertySymbols;
+var p = Object.prototype.hasOwnProperty, f = Object.prototype.propertyIsEnumerable;
+var o = (i, e, t) => e in i ? y(i, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : i[e] = t, d = (i, e) => {
+  for (var t in e || (e = {}))
+    p.call(e, t) && o(i, t, e[t]);
+  if (h)
+    for (var t of h(e))
+      f.call(e, t) && o(i, t, e[t]);
+  return i;
+};
+var s = (i, e, t) => o(i, typeof e != "symbol" ? e + "" : e, t);
+var u = (i, e, t) => new Promise((a, r) => {
+  var b = (l) => {
+    try {
+      n(t.next(l));
+    } catch (c) {
+      r(c);
+    }
+  }, g = (l) => {
+    try {
+      n(t.throw(l));
+    } catch (c) {
+      r(c);
+    }
+  }, n = (l) => l.done ? a(l.value) : Promise.resolve(l.value).then(b, g);
+  n((t = t.apply(i, e)).next());
+});
+class C {
+  constructor() {
+    s(this, "url");
+    s(this, "retJSon");
+    s(this, "breakQuery");
+    s(this, "baseUrl");
+    s(this, "clientId");
+    s(this, "grantType");
+    s(this, "tenantId");
+    s(this, "source");
+    s(this, "socialCode");
+    s(this, "socialState");
+    s(this, "loginCallback");
+    this.retJSon = null, this.breakQuery = null, this.url = "", this.baseUrl = null, this.clientId = "clientId", this.grantType = "grantType", this.tenantId = "tenantId", this.source = "source", this.socialCode = "socialCode", this.socialState = "socialState", this.loginCallback = null;
+  }
+  setOptions(e) {
+    this.url = e.url || "/authAdminService/oauth/sso/login", this.breakQuery = e.breakQuery || "ticket", this.baseUrl = e.baseUrl || "", e.props && ("clientId" in e.props && (this.clientId = e.props.clientId), "grantType" in e.props && (this.grantType = e.props.grantType), "tenantId" in e.props && (this.tenantId = e.props.tenantId), "source" in e.props && (this.source = e.props.source), "socialCode" in e.props && (this.socialCode = e.props.socialCode), "socialState" in e.props && (this.socialState = e.props.socialState)), this.loginCallback = e.loginCallback || null;
+  }
+  oauthSsoLogin(e, t = !1) {
+    let a = {
+      clientId: e[this.clientId] || "e5cd7e4891bf95d1d19206ce24a7b32e",
+      grantType: e[this.grantType] || "social",
+      // 授权类型，默认值（social）
+      tenantId: e[this.tenantId],
+      source: e[this.source],
+      // 渠道（qq、gitee）
+      socialCode: e[this.socialCode],
+      // 第三方登录平台[code]
+      socialState: e[this.socialState]
+    };
+    return t && (a = d({}, e)), fetch(this.baseUrl + this.url, {
+      method: "POST",
+      body: JSON.stringify(a),
+      headers: {
+        bizCode: "llm",
+        clientid: "e5cd7e4891bf95d1d19206ce24a7b32e",
+        "Content-Type": "application/json"
+      }
+    }).then((r) => r.json());
+  }
+  routerBeforeEach(e, t, a) {
+    return u(this, null, function* () {
+      if (e != null && e.query && this.breakQuery && e.query[this.breakQuery]) {
+        const r = yield this.oauthSsoLogin(e.query);
+        this.loginCallback && this.loginCallback(r);
+      }
+      a();
+    });
+  }
+  bindRouter(e) {
+    e.beforeEach(this.routerBeforeEach.bind(this));
+  }
+  getResult() {
+    return this.retJSon;
+  }
+  // 绑定毁掉函数，登出接口调用之后
+  bindLoginCallback(e) {
+    this.loginCallback = e;
+  }
+  install(e, t) {
+    this.setOptions(t), e.config.globalProperties.$sso = this;
+  }
+}
+const I = new C();
+export {
+  I as sso
+};
