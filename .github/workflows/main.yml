@@ -1,0 +1,60 @@
+name: NPM Publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Setup Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Update Version
+        run: |
+          # 获取当前版本号
+          current_version=$(node -p "require('./package.json').version")
+          
+          # 将版本号分割为主版本号、次版本号和修订号
+          IFS='.' read -r -a version_parts <<< "$current_version"
+          
+          # 增加修订号
+          patch_version=$((version_parts[2] + 1))
+          
+          # 组合新版本号
+          new_version="${version_parts[0]}.${version_parts[1]}.$patch_version"
+          
+          # 更新 package.json 中的版本号
+          npm version $new_version --no-git-tag-version
+
+      - name: Build Package
+        run: npm run build
+
+      - name: Commit Version Update
+        run: |
+          git add package.json
+          git commit -m "chore: bump version [skip ci]"
+          git push
+
+      - name: Publish to NPM
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }} 
