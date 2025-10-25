@@ -51,11 +51,11 @@ jobs:
       - name: Build Package
         run: npm run build
 
-      - name: Commit Version Update
-        run: |
-          git add package.json
-          git commit -m "chore: bump version [skip ci]"
-          git push
+      # - name: Commit Version Update
+      #   run: |
+      #     git add package.json
+      #     git commit -m "chore: bump version [skip ci]"
+      #     git push
 
       - name: Publish to NPM
         run: npm publish --access public
