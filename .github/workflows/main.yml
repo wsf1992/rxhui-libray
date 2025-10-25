@@ -28,7 +28,7 @@ jobs:
 
       - name: Setup Git
         run: |
-          git config --local user.email "741987899@github.com"
+          git config --local user.email "741987899@qq.com"
           git config --local user.name "wsf1992"
 
       - name: Update Version
