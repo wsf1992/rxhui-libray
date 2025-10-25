@@ -56,8 +56,6 @@ jobs:
           git add package.json
           git commit -m "chore: bump version [skip ci]"
           git push
-        with:
-          token: ${{ secrets.TOKEN }}
 
       - name: Publish to NPM
         run: npm publish --access public
