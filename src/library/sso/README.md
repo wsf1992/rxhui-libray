@@ -16,7 +16,7 @@ npm install rxhui-library
 // main.ts
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import { sso } from 'rxhui-library/sso'
+import { sso } from 'rxhui-library'
 import App from './App.vue'
 
 const router = createRouter({

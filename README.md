@@ -20,7 +20,7 @@ npm install rxhui-library
 ### SSO 单点登录
 
 ```typescript
-import { sso } from 'rxhui-library/sso'
+import { sso } from 'rxhui-library'
 
 // 作为 Vue 插件使用
 app.use(sso, {
